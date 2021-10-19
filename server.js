@@ -53,7 +53,7 @@ function sendingData(request, response){
 app.post('/add', addingData);
 
 function addingData(request, response){
-    console.log(req.body);
+    console.log(request.body);
     newData = {
         date: request.body.date,
         temp: request.body.temp,

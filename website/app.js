@@ -6,9 +6,11 @@ let newDate = d.getMonth()+1+'.'+ d.getDate()+'.'+ d.getFullYear();
 
 
 //the url and api key
-let baseURL = 'https://openweathermap.org/data/2.5/forecast?zip=';
+let baseURL = 'http://api.openweathermap.org/data/2.5/forecast?zip=';
 
 let apiKey = '&appid=ffd4f9d84f2ac723a0790536a8e40c41';
+
+
 
 
 //post data function
@@ -33,6 +35,7 @@ const postData = async (url = '', data = {})=>{
         console.log('error', error);
     }
 }
+
 
 
 
@@ -71,6 +74,8 @@ const getWeather = async (baseURL, zip, key)=>{
         console.log('error', error);
     }
 }
+
+
 
 
 
