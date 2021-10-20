@@ -1,17 +1,22 @@
 /* Global Variables */
 
+//the url and api key
+let url = 'http://api.openweathermap.org/data/2.5/forecast?zip=';
+let api = 'ffd4f9d84f2ac723a0790536a8e40c41';
+
 // Create a new date instance dynamically with JS
 let d = new Date();
-let newDate = d.getMonth()+1+'.'+ d.getDate()+'.'+ d.getFullYear();
+let newDate = d.getMonth()+'.'+ d.getDate()+'.'+ d.getFullYear();
 
-
-//the url and api key
-let baseURL = 'http://api.openweathermap.org/data/2.5/forecast?zip=';
-
-let apiKey = '&appid=ffd4f9d84f2ac723a0790536a8e40c41';
+//event listener
+document.getElementById('generate').addEventListener('click', btnFunction);
 
 
 
+
+
+
+/* functions */
 
 //post data function
 const postData = async (url = '', data = {})=>{
@@ -36,37 +41,43 @@ const postData = async (url = '', data = {})=>{
     }
 }
 
+//get data and print info on screen
+function btnFunction(e){
 
+    //getting and storing user input
+    const zipNumber = document.getElementById('zip').value;
+    const journalData = document.getElementById('feelings').value;
 
-
-//event listener
-document.getElementById('generate').addEventListener('click', respondToClick);
-
-//function that responds to click by getting data from the text area
-//then getting the weather info
-//then posting the data
-//then updating the UI
-function respondToClick(e){
-
-    const zip = document.getElementById('zip').value;
-    const feelings = document.getElementById('feelings').value;
-    getWeather(baseURL, zip, apiKey)
-    .then(function(data){
+    if(zipNumber =='' || journalData ==''){
+        
+        if(zipNumber =='' && journalData ==''){
+            console.log('error');
+            alert('please enter your zip number and tell us how you feel today :)');
+        }else if (zipNumber == ''){
+            console.log('error');
+            alert('please enter your zip number');
+        }else if (journalData == ''){
+            console.log('error');
+            alert('please tell us how you feel today :)');
+        }
+    }else{
+        forecast(url, zipNumber, api)
+        .then(function(data){
         console.log(data);
-
-        postData('/add', {date:newDate, temp:data.list[0].main.temp, content:feelings})
+        postData('/add', {date:newDate, temp:data.list[0].main.temp, content:journalData})
         updateUi();
-    })
-};
+        })
+    
+    }
 
 
+}
 
 
+//get the forecast from the openweathermap website 
+const forecast = async (baseURL, zip, key)=>{
 
-//get weather info from the weather api
-const getWeather = async (baseURL, zip, key)=>{
-
-    const res = await fetch(baseURL+zip+key);
+    const res = await fetch(baseURL+zip+'&appid='+key);
     try{
         const data = await res.json();
         return data;
@@ -76,18 +87,15 @@ const getWeather = async (baseURL, zip, key)=>{
 }
 
 
-
-
-
-//updateUI function updates the UI
+//updates the UI
 const updateUi = async ()=>{
     const request = await fetch('/all');
 
     try{
         const allData = await request.json();
-        document.getElementById('date').innerHTML = `Date: ${allData[0].date}`;
-        document.getElementById('temp').innerHTML = `temperature: ${allData[0].temp}`;
-        document.getElementById('content').innerHTML = `I feel: ${allData[0].content}`;
+        document.getElementById('date').innerHTML = 'Date: '+ allData.date;
+        document.getElementById('temp').innerHTML = 'Temperature: '+ allData.temp+' Kelvin';
+        document.getElementById('content').innerHTML = 'Feeling: '+ allData.content;
     }catch(error){
         console.log('error', error);
     }
